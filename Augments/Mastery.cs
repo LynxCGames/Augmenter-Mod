@@ -466,7 +466,7 @@ namespace AugmentsMod.Augments
         public override string AugmentName => "Trade Network";
         public override string Icon => VanillaSprites.TradeEmpireUpgradeIcon;
         public override string TowerType => "Monkey Buccaneer Augment";
-        public override string AugmentDescription => "Trade Empire increases money generation globally by 20% (+10% per stack).";
+        public override string AugmentDescription => "Trade Empire increases money generation globally by 10% (+5% per stack).";
         public override void EditTower()
         {
             foreach (var towers in InGame.instance.GetTowers().ToArray())
@@ -482,7 +482,7 @@ namespace AugmentsMod.Augments
                             if (augment.StackIndex == 1)
                             {
                                 towerModel.range = 999;
-                                towerModel.AddBehavior(new MonkeyCityIncomeSupportModel("TradeNetwork_", true, 1.25f, null, "", ""));
+                                towerModel.AddBehavior(new MonkeyCityIncomeSupportModel("TradeNetwork_", true, 1.1f, null, "", ""));
                             }
                             if (augment.StackIndex > 1)
                             {
@@ -490,7 +490,7 @@ namespace AugmentsMod.Augments
                                 {
                                     if (behavior.name.Contains("TradeNetwork_"))
                                     {
-                                        behavior.incomeModifier += 0.1f;
+                                        behavior.incomeModifier += 0.05f;
                                     }
                                 }
                             }

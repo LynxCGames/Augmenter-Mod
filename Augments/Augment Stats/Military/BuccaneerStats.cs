@@ -176,7 +176,7 @@ namespace AugmentsMod.Augments.Augment_Stats
                         if (augment.StackIndex >= 1)
                         {
                             towerModel.range = 999;
-                            towerModel.AddBehavior(new MonkeyCityIncomeSupportModel("TradeNetwork_", true, (1.15f + (0.1f * augment.StackIndex)), null, "", ""));
+                            towerModel.AddBehavior(new MonkeyCityIncomeSupportModel("TradeNetwork_", true, (1.05f + (0.05f * augment.StackIndex)), null, "", ""));
                         }
                     }
                 }

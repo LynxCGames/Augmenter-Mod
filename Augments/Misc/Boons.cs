@@ -18,6 +18,7 @@ namespace AugmentsMod.Augments.Misc
         public override string BoonCode => "Dart Monkey";
         public override int xPos => -900;
         public override int yPos => 600;
+        
         public override Type TowerType => Type.Primary;
     }
     public class BoomerangBoon : BoonTemplate
@@ -191,7 +192,7 @@ namespace AugmentsMod.Augments.Misc
         public override int yPos => -750;
         public override Type TowerType => Type.Support;
     }
-    public class FarmBoon : BoonTemplate
+    /*public class FarmBoon : BoonTemplate
     {
         public override string TowerName => "Banana Farm";
         public override string TowerIcon => VanillaSprites.BananaFarmIcon2;
@@ -199,7 +200,7 @@ namespace AugmentsMod.Augments.Misc
         public override int xPos => -600;
         public override int yPos => -750;
         public override Type TowerType => Type.Support;
-    }
+    }*/
     public class VillageBoon : BoonTemplate
     {
         public override string TowerName => "Monkey Village";

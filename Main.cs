@@ -21,6 +21,8 @@ using Templates;
 using UnityEngine;
 using HarmonyLib;
 using UnityEngine.UIElements;
+using Il2CppAssets.Scripts.Unity.Gamepad;
+using Il2CppAssets.Scripts.Data.Quests.QuestDialogue;
 
 [assembly: MelonInfo(typeof(AugmentsMod.Augmenter), ModHelperData.Name, ModHelperData.Version, ModHelperData.RepoOwner)]
 [assembly: MelonGame("Ninja Kiwi", "BloonsTD6")]
@@ -48,7 +50,6 @@ public class Augmenter : BloonsTD6Mod
     public int XPMax = 10;
     public bool activeBoon = false;
     public string boon = " ";
-    public float boonCost = 2000;
     //public float newAugmentCost = 100;
     //public float baseNewAugmentCost = 100;
     public float intermediateChance = 85;
@@ -60,9 +61,9 @@ public class Augmenter : BloonsTD6Mod
     public float level = 0;
     public int newAugmentSlot = 3;
     public AugmentTemplate.Rarity minNewAugmentRarity = AugmentTemplate.Rarity.Basic;
-    public AugmentTemplate.Rarity maxNewAugmentRarity = AugmentTemplate.Rarity.Mastery;
+    public AugmentTemplate.Rarity maxNewAugmentRarity = AugmentTemplate.Rarity.Heroic;
     public AugmentTemplate.Rarity minStrongAugmentRarity = AugmentTemplate.Rarity.Basic;
-    public AugmentTemplate.Rarity maxStrongAugmentRarity = AugmentTemplate.Rarity.Mastery;
+    public AugmentTemplate.Rarity maxStrongAugmentRarity = AugmentTemplate.Rarity.Heroic;
 
 
     public float questLevel = 0;
@@ -116,6 +117,11 @@ public class Augmenter : BloonsTD6Mod
                 Mastery.MasteryAug.Add(augment.AugmentName);
                 Mastery.MasteryImg.Add(augment.Icon);
             }
+            if (augment.AugmentRarity == AugmentTemplate.Rarity.Heroic)
+            {
+                Heroic.HeroicAug.Add(augment.AugmentName);
+                Heroic.HeroicImg.Add(augment.Icon);
+            }
         }
     }
     public void Reset()
@@ -132,11 +138,15 @@ public class Augmenter : BloonsTD6Mod
         newAugmentSlot = 3;
         activeBoon = false;
         boon = " ";
-        boonCost = 2000;
 
         foreach (var augmentContent in ModContent.GetContent<AugmentTemplate>().OrderByDescending(c => c.mod == mod))
         {
             augmentContent.StackIndex = 0;
+        }
+
+        foreach (var boon in ModContent.GetContent<BoonTemplate>().OrderByDescending(c => c.mod == mod))
+        {
+            boon.cost = 2000;
         }
     }
     public void QuestReset()
@@ -394,7 +404,7 @@ public class Augmenter : BloonsTD6Mod
         {
             if (SandboxMode)
             {
-                mod.level = 3;
+                mod.level = 4;
             }
 
             InGame game = InGame.instance;
@@ -433,239 +443,7 @@ public class Augmenter : BloonsTD6Mod
         }
 
 
-        // #### Sandbox Panels ####
-
-        public static void BasicSandBoxAugmentPanel(RectTransform rect, Tower tower)
-        {
-            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
-            panel.transform.DestroyAllChildren();
-            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
-            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
-            {
-                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; /*if (mod.upgradeOpen == true) {*/ CreateUpgradeMenu(rect, tower); //}
-            }));
-            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
-
-            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
-            {
-                if (augment.SandboxIndex == 1)
-                {
-                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
-                }
-            }
-        }
-        public static void IntermediateSandBoxAugmentPanel(RectTransform rect, Tower tower)
-        {
-            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
-            panel.transform.DestroyAllChildren();
-            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
-            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
-            {
-                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; CreateUpgradeMenu(rect, tower);
-            }));
-            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
-
-            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
-            {
-                if (augment.SandboxIndex == 2)
-                {
-                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
-                }
-            }
-        }
-        public static void AdvancedSandBoxAugmentPanel(RectTransform rect, Tower tower)
-        {
-            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
-            panel.transform.DestroyAllChildren();
-            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
-            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
-            {
-                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; CreateUpgradeMenu(rect, tower);
-            }));
-            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
-
-            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
-            {
-                if (augment.SandboxIndex == 3)
-                {
-                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
-                }
-            }
-        }
-        public static void MasterySandBoxAugmentPanel(RectTransform rect, Tower tower)
-        {
-            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
-            panel.transform.DestroyAllChildren();
-            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
-            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
-            {
-                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; CreateUpgradeMenu(rect, tower);
-            }));
-            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
-
-            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
-            {
-                if (augment.SandboxIndex == 4)
-                {
-                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
-                }
-            }
-        }
-
-        public static ModHelperPanel CreateAugment(AugmentTemplate augment, Tower tower)
-        {
-            var sprite = VanillaSprites.MainBgPanelJukebox;
-            if (augment.AugmentRarity == AugmentTemplate.Rarity.Intermediate)
-            {
-                sprite = VanillaSprites.MainBGPanelBronze;
-            }
-            if (augment.AugmentRarity == AugmentTemplate.Rarity.Advanced)
-            {
-                sprite = VanillaSprites.MainBGPanelSilver;
-            }
-            if (augment.AugmentRarity == AugmentTemplate.Rarity.Mastery)
-            {
-                sprite = VanillaSprites.MainBgPanelHematite;
-            }
-            var panel = ModHelperPanel.Create(new Info("AugmentContent" + augment.AugmentName, 0, 0, 2250, 150), sprite);
-            MenuUi upgradeUi = panel.AddComponent<MenuUi>();
-            ModHelperText augName = panel.AddText(new Info("augName", -600, 0, 1000, 150), augment.AugmentName, 80, TextAlignmentOptions.MidlineLeft);
-            ModHelperText rarity = panel.AddText(new Info("rarity", 275, 0, 600, 150), augment.AugmentRarity.ToString(), 80, TextAlignmentOptions.MidlineLeft);
-            ModHelperImage image = panel.AddImage(new Info("image", -150, 0, 140, 140), augment.Icon);
-            ModHelperButton infoAugBtn = panel.AddButton(new Info("infoAugBtn", 600, 0, 90, 90), VanillaSprites.BlueBtn, new System.Action(() => { upgradeUi.InfoPanel(augment, tower); }));
-            ModHelperText infoAug = infoAugBtn.AddText(new Info("infoAug", 0, 0, 90, 90), "!", 50);
-            ModHelperButton selectAugBtn = panel.AddButton(new Info("selectAugBtn", 900, 0, 400, 120), VanillaSprites.GreenBtnLong, new System.Action(() => { upgradeUi.AugmentSelected(augment.AugmentName, tower); }));
-            ModHelperText selectAug = selectAugBtn.AddText(new Info("selectAug", 0, 0, 400, 120), "Select", 60);
-            return panel;
-        }
-
-
-        // #### Augment Panels ####
-
-        public void NewBasicAugment(Tower tower)
-        {
-            InGame game = InGame.instance;
-            if (SandboxMode)
-            {
-                RectTransform rect = game.uiRect;
-                MenuUi.NewBasicAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-                return;
-            }
-            if (game.GetCash() >= mod.basicCost)
-            {
-                if (mod.level < 3)
-                {
-                    mod.levelXp += 1;
-                }
-
-                if (mod.questLevel == 1 || mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
-                {
-                    mod.questXp += 1;
-                }
-                /*if (mod.questLevel == 2 && mod.transmitLevel < mod.questLevel)
-                {
-                    mod.questXp += 1;
-                }*/
-
-                game.AddCash(-mod.basicCost);
-                RectTransform rect = game.uiRect;
-                tower.worth += mod.basicCost;
-                MenuUi.NewBasicAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-            }
-        }
-        public void NewIntermediateAugment(Tower tower)
-        {
-            InGame game = InGame.instance;
-            if (SandboxMode)
-            {
-                RectTransform rect = game.uiRect;
-                MenuUi.NewIntermediateAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-                return;
-            }
-            if (game.GetCash() >= mod.intermediateCost)
-            {
-                if (mod.level < 3)
-                {
-                    mod.levelXp += 5;
-                }
-
-                if (mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
-                {
-                    mod.questXp += 5;
-                }
-
-                game.AddCash(-mod.intermediateCost);
-                RectTransform rect = game.uiRect;
-                tower.worth += mod.intermediateCost;
-                MenuUi.NewIntermediateAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-            }
-        }
-        public void NewAdvancedAugment(Tower tower)
-        {
-            InGame game = InGame.instance;
-            if (SandboxMode)
-            {
-                RectTransform rect = game.uiRect;
-                MenuUi.NewAdvancedAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-                return;
-            }
-            if (game.GetCash() >= mod.advancedCost)
-            {
-                if (mod.level < 3)
-                {
-                    mod.levelXp += 10;
-                }
-
-                if (mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
-                {
-                    mod.questXp += 10;
-                }
-                if (mod.questLevel == 4 && mod.transmitLevel < mod.questLevel)
-                {
-                    mod.questXp += 1;
-                }
-
-                game.AddCash(-mod.advancedCost);
-                RectTransform rect = game.uiRect;
-                tower.worth += mod.advancedCost;
-                MenuUi.NewAdvancedAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-            }
-        }
-        public void NewMasteryAugment(Tower tower)
-        {
-            InGame game = InGame.instance;
-            if (SandboxMode)
-            {
-                RectTransform rect = game.uiRect;
-                MenuUi.NewMasteryAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-                return;
-            }
-            if (game.GetCash() >= mod.masteryCost)
-            {
-                /*if (mod.level < 3)
-                {
-                    mod.levelXp += 25;
-                }*/
-
-                if (mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
-                {
-                    mod.questXp += 25;
-                }
-
-                game.AddCash(-mod.masteryCost);
-                RectTransform rect = game.uiRect;
-                tower.worth += mod.masteryCost;
-                MenuUi.NewMasteryAugmentPanel(rect, tower);
-                MenuUi.instance.CloseMenu();
-            }
-        }
+        // #### Basic Augments ####
 
         public static void NewBasicAugmentPanel(RectTransform rect, Tower tower)
         {
@@ -833,6 +611,59 @@ public class Augmenter : BloonsTD6Mod
             }
         }
 
+        public void NewBasicAugment(Tower tower)
+        {
+            InGame game = InGame.instance;
+            if (SandboxMode)
+            {
+                RectTransform rect = game.uiRect;
+                MenuUi.NewBasicAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+                return;
+            }
+            if (game.GetCash() >= mod.basicCost)
+            {
+                if (mod.level < 4)
+                {
+                    mod.levelXp += 1;
+                }
+
+                if (mod.questLevel == 1 || mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
+                {
+                    mod.questXp += 1;
+                }
+
+                game.AddCash(-mod.basicCost);
+                RectTransform rect = game.uiRect;
+                tower.worth += mod.basicCost;
+                MenuUi.NewBasicAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+            }
+        }
+
+        public static void BasicSandBoxAugmentPanel(RectTransform rect, Tower tower)
+        {
+            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
+            panel.transform.DestroyAllChildren();
+            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
+            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
+            {
+                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; /*if (mod.upgradeOpen == true) {*/ CreateUpgradeMenu(rect, tower); //}
+            }));
+            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
+
+            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
+            {
+                if (augment.SandboxIndex == 1)
+                {
+                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
+                }
+            }
+        }
+
+
+        // #### Intermediate Augments ####
+
         public static void NewIntermediateAugmentPanel(RectTransform rect, Tower tower)
         {
             mod.panelOpen = true;
@@ -906,6 +737,59 @@ public class Augmenter : BloonsTD6Mod
             }
         }
 
+        public void NewIntermediateAugment(Tower tower)
+        {
+            InGame game = InGame.instance;
+            if (SandboxMode)
+            {
+                RectTransform rect = game.uiRect;
+                MenuUi.NewIntermediateAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+                return;
+            }
+            if (game.GetCash() >= mod.intermediateCost)
+            {
+                if (mod.level < 4)
+                {
+                    mod.levelXp += 5;
+                }
+
+                if (mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
+                {
+                    mod.questXp += 5;
+                }
+
+                game.AddCash(-mod.intermediateCost);
+                RectTransform rect = game.uiRect;
+                tower.worth += mod.intermediateCost;
+                MenuUi.NewIntermediateAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+            }
+        }
+
+        public static void IntermediateSandBoxAugmentPanel(RectTransform rect, Tower tower)
+        {
+            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
+            panel.transform.DestroyAllChildren();
+            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
+            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
+            {
+                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; CreateUpgradeMenu(rect, tower);
+            }));
+            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
+
+            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
+            {
+                if (augment.SandboxIndex == 2)
+                {
+                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
+                }
+            }
+        }
+
+
+        // #### Advanced Augments ####
+
         public static void NewAdvancedAugmentPanel(RectTransform rect, Tower tower)
         {
             mod.panelOpen = true;
@@ -958,10 +842,16 @@ public class Augmenter : BloonsTD6Mod
                         var numAug = rnd.Next(0, Advanced.AdvancedAug.Count);
                         augment = Advanced.AdvancedAug[numAug];
                         img = Advanced.AdvancedImg[numAug];
-
                         InGame game = InGame.instance;
-                        game.AddCash(mod.boonCost / 3);
-                        tower.worth -= mod.boonCost / 3;
+
+                        foreach (var boon in ModContent.GetContent<BoonTemplate>().OrderByDescending(c => c.mod == mod))
+                        {
+                            if (boon.BoonCode == mod.boon)
+                            {
+                                game.AddCash((boon.cost / 1.2f) / 3);
+                                tower.worth -= (boon.cost / 1.2f) / 3;
+                            }
+                        }
                     }
                 }
                 else
@@ -990,6 +880,63 @@ public class Augmenter : BloonsTD6Mod
                 augContentX += augmentPanelWidth;
             }
         }
+
+        public void NewAdvancedAugment(Tower tower)
+        {
+            InGame game = InGame.instance;
+            if (SandboxMode)
+            {
+                RectTransform rect = game.uiRect;
+                MenuUi.NewAdvancedAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+                return;
+            }
+            if (game.GetCash() >= mod.advancedCost)
+            {
+                if (mod.level < 4)
+                {
+                    mod.levelXp += 10;
+                }
+
+                if (mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
+                {
+                    mod.questXp += 10;
+                }
+                if (mod.questLevel == 4 && mod.transmitLevel < mod.questLevel)
+                {
+                    mod.questXp += 1;
+                }
+
+                game.AddCash(-mod.advancedCost);
+                RectTransform rect = game.uiRect;
+                tower.worth += mod.advancedCost;
+                MenuUi.NewAdvancedAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+            }
+        }
+
+        public static void AdvancedSandBoxAugmentPanel(RectTransform rect, Tower tower)
+        {
+            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
+            panel.transform.DestroyAllChildren();
+            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
+            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
+            {
+                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; CreateUpgradeMenu(rect, tower);
+            }));
+            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
+
+            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
+            {
+                if (augment.SandboxIndex == 3)
+                {
+                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
+                }
+            }
+        }
+
+
+        // #### Mastery Augments ####
 
         public static void NewMasteryAugmentPanel(RectTransform rect, Tower tower)
         {
@@ -1043,10 +990,16 @@ public class Augmenter : BloonsTD6Mod
                         var numAug = rnd.Next(0, Mastery.MasteryAug.Count);
                         augment = Mastery.MasteryAug[numAug];
                         img = Mastery.MasteryImg[numAug];
-
                         InGame game = InGame.instance;
-                        game.AddCash(mod.boonCost / 3);
-                        tower.worth -= mod.boonCost / 3;
+
+                        foreach (var boon in ModContent.GetContent<BoonTemplate>().OrderByDescending(c => c.mod == mod))
+                        {
+                            if (boon.BoonCode == mod.boon)
+                            {
+                                game.AddCash((boon.cost / 1.2f) / 3);
+                                tower.worth -= (boon.cost / 1.2f) / 3;
+                            }
+                        }
                     }
                 }
                 else
@@ -1074,6 +1027,148 @@ public class Augmenter : BloonsTD6Mod
                 augmentPanelX += augmentPanelWidth;
                 augContentX += augmentPanelWidth;
             }
+        }
+
+        public void NewMasteryAugment(Tower tower)
+        {
+            InGame game = InGame.instance;
+            if (SandboxMode)
+            {
+                RectTransform rect = game.uiRect;
+                MenuUi.NewMasteryAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+                return;
+            }
+            if (game.GetCash() >= mod.masteryCost)
+            {
+                if (mod.level < 4)
+                {
+                    mod.levelXp += 25;
+                }
+
+                if (mod.questLevel == 2 || mod.questLevel == 5 && mod.transmitLevel < mod.questLevel)
+                {
+                    mod.questXp += 25;
+                }
+
+                game.AddCash(-mod.masteryCost);
+                RectTransform rect = game.uiRect;
+                tower.worth += mod.masteryCost;
+                MenuUi.NewMasteryAugmentPanel(rect, tower);
+                MenuUi.instance.CloseMenu();
+            }
+        }
+
+        public static void MasterySandBoxAugmentPanel(RectTransform rect, Tower tower)
+        {
+            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1500, 2500, 1850, new UnityEngine.Vector2()), VanillaSprites.MainBGPanelBlue);
+            panel.transform.DestroyAllChildren();
+            ModHelperScrollPanel scrollPanel = panel.AddScrollPanel(new Info("scrollPanel", 0, 0, 2500, 1850), RectTransform.Axis.Vertical, VanillaSprites.MainBGPanelBlue, 15, 50);
+            ModHelperButton exit = panel.AddButton(new Info("exit", 1200, 900, 135), VanillaSprites.RedBtn, new System.Action(() =>
+            {
+                tower.SetSelectionBlocked(false); panel.DeleteObject(); mod.selectingAugmentOpen = false; mod.panelOpen = false; CreateUpgradeMenu(rect, tower);
+            }));
+            ModHelperText x = exit.AddText(new Info("x", 0, 0, 130), "X", 80);
+
+            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
+            {
+                if (augment.SandboxIndex == 4)
+                {
+                    scrollPanel.AddScrollContent(CreateAugment(augment, tower));
+                }
+            }
+        }
+
+
+        // #### Heroic Augments ####
+
+        public void NewHeroic(Tower tower)
+        {
+            InGame game = InGame.instance;
+            RectTransform rect = game.uiRect;
+            MenuUi.NewHeroicAugmentPanel(rect, tower);
+            MenuUi.instance.CloseMenu();
+        }
+
+        public static void NewHeroicAugmentPanel(RectTransform rect, Tower tower)
+        {
+            ModHelperPanel panel = rect.gameObject.AddModHelperPanel(new Info("Panel_", 2200, 1350, 3400, 2000, new UnityEngine.Vector2()), VanillaSprites.MainBgPanelParagon);
+            panel.transform.DestroyAllChildren();
+            ModHelperText text = panel.AddText(new Info("text", 0, 1000, 1200, 180), "Heroic Augments", 100);
+            ModHelperScrollPanel heroicScrollPanel = panel.AddScrollPanel(new Info("heroicScrollPanel", 0, 0, 3250, 1850), RectTransform.Axis.Horizontal, VanillaSprites.MainBgPanelParagon, 50, 50);
+
+            foreach (var augment in ModContent.GetContent<AugmentTemplate>())
+            {
+                if (augment.SandboxIndex == 5)
+                {
+                    heroicScrollPanel.AddScrollContent(CreateHeroic(augment, tower));
+                }
+            }
+
+            ModHelperButton close = panel.AddButton(new Info("close", 0, -1025, 500, 160), VanillaSprites.RedBtnLong, new System.Action(() =>
+            {
+                tower.SetSelectionBlocked(false);
+                panel.DeleteObject();
+                if (mod.isSelected == true)
+                {
+                    CreateUpgradeMenu(rect, tower);
+                }
+            }));
+            ModHelperText closeText = close.AddText(new Info("closeText", 0, 0, 700, 160), "Close", 70);
+        }
+
+        public static ModHelperPanel CreateHeroic(AugmentTemplate augment, Tower tower)
+        {
+            var panel = ModHelperPanel.Create(new Info("AugmentContent" + augment.AugmentName, 0, 0, 900, 1750), VanillaSprites.PortraitContainerParagon);
+            MenuUi upgradeUi = panel.AddComponent<MenuUi>();
+            ModHelperText augName = panel.AddText(new Info("augName", 0, 775, 900, 180), augment.AugmentName, 80);
+            ModHelperText augType = panel.AddText(new Info("augType", 0, 675, 900, 180), augment.TowerType, 60);
+            ModHelperImage image = panel.AddImage(new Info("image", 0, 300, 600), augment.Icon);
+
+            ModHelperButton infoAugBtn = panel.AddButton(new Info("infoAugBtn", -325, -150, 150), VanillaSprites.BlueBtn, new System.Action(() => { upgradeUi.InfoPanel(augment, tower); }));
+            ModHelperText infoAug = infoAugBtn.AddText(new Info("infoAug", 0, 0, 90, 90), "!", 80);
+            ModHelperPanel degreePanel = panel.AddPanel(new Info("degreePanel", 275, -150, 250), VanillaSprites.PortraitContainerParagon);
+            ModHelperText degreeAug = degreePanel.AddText(new Info("degreeAug", 0, 0, 250), $"{augment.StackIndex}", 100);
+
+            ModHelperPanel degreeProgress = panel.AddPanel(new Info("degreePanel", 0, -400, 800, 120), VanillaSprites.PortraitContainerParagon);
+            ModHelperText prgress = panel.AddText(new Info("progress", 0, -400, 700, 180), "Degree Level", 60);
+
+            ModHelperPanel unlockProgress = panel.AddPanel(new Info("unlockPanel", 0, -550, 800, 120), VanillaSprites.PortraitContainerParagon);
+            ModHelperText objectiveProgress = panel.AddText(new Info("objProgress", 0, -550, 750, 180), $"Gain xxx augment points from {augment.TowerType}s to unlock", 40);
+
+            ModHelperButton selectAugBtn = panel.AddButton(new Info("selectAugBtn", 0, -750, 600, 150), VanillaSprites.PurpleBtnLong, null);
+            ModHelperText selectAug = selectAugBtn.AddText(new Info("selectAug", 0, 0, 600, 150), "Upgrade", 80);
+            return panel;
+        }
+
+
+        // #### Augment Panels ####
+
+        public static ModHelperPanel CreateAugment(AugmentTemplate augment, Tower tower)
+        {
+            var sprite = VanillaSprites.MainBgPanelJukebox;
+            if (augment.AugmentRarity == AugmentTemplate.Rarity.Intermediate)
+            {
+                sprite = VanillaSprites.MainBGPanelBronze;
+            }
+            if (augment.AugmentRarity == AugmentTemplate.Rarity.Advanced)
+            {
+                sprite = VanillaSprites.MainBGPanelSilver;
+            }
+            if (augment.AugmentRarity == AugmentTemplate.Rarity.Mastery)
+            {
+                sprite = VanillaSprites.MainBgPanelHematite;
+            }
+            var panel = ModHelperPanel.Create(new Info("AugmentContent" + augment.AugmentName, 0, 0, 2250, 150), sprite);
+            MenuUi upgradeUi = panel.AddComponent<MenuUi>();
+            ModHelperText augName = panel.AddText(new Info("augName", -600, 0, 1000, 150), augment.AugmentName, 80, TextAlignmentOptions.MidlineLeft);
+            ModHelperText rarity = panel.AddText(new Info("rarity", 275, 0, 600, 150), augment.AugmentRarity.ToString(), 80, TextAlignmentOptions.MidlineLeft);
+            ModHelperImage image = panel.AddImage(new Info("image", -150, 0, 140, 140), augment.Icon);
+            ModHelperButton infoAugBtn = panel.AddButton(new Info("infoAugBtn", 600, 0, 90, 90), VanillaSprites.BlueBtn, new System.Action(() => { upgradeUi.InfoPanel(augment, tower); }));
+            ModHelperText infoAug = infoAugBtn.AddText(new Info("infoAug", 0, 0, 90, 90), "!", 50);
+            ModHelperButton selectAugBtn = panel.AddButton(new Info("selectAugBtn", 900, 0, 400, 120), VanillaSprites.GreenBtnLong, new System.Action(() => { upgradeUi.AugmentSelected(augment.AugmentName, tower); }));
+            ModHelperText selectAug = selectAugBtn.AddText(new Info("selectAug", 0, 0, 400, 120), "Select", 60);
+            return panel;
         }
 
         public void AugmentSelected(string Augment, Tower tower)
@@ -1112,7 +1207,13 @@ public class Augmenter : BloonsTD6Mod
             if (mod.level == 2 && mod.levelXp >= mod.XPMax)
             {
                 mod.level += 1;
+                mod.levelXp = 0;
+                mod.XPMax = 250;
             }
+            /*if (mod.level == 3 && mod.levelXp >= mod.XPMax)
+            {
+                mod.level += 1;
+            }*/
 
             if (mod.questLevel == 1 && mod.questXp >= mod.questXPMax)
             {
@@ -1171,12 +1272,13 @@ public class Augmenter : BloonsTD6Mod
                 ModHelperButton boonButton = panel.AddButton(new Info("boonButton", boon.xPos, boon.yPos, 250), VanillaSprites.YellowBtn, new System.Action(() =>
                 {
                     InGame game = InGame.instance;
-                    if (mod.activeBoon == false && game.GetCash() >= mod.boonCost)
+                    if (mod.activeBoon == false && game.GetCash() >= boon.cost)
                     {
                         mod.activeBoon = true;
                         mod.boon = boon.BoonCode;
-                        game.AddCash(-mod.boonCost);
-                        tower.worth += mod.boonCost;
+                        game.AddCash(-boon.cost);
+                        tower.worth += (boon.cost * 0.8f);
+                        boon.cost *= 1.2f;
 
                         if (mod.questLevel == 3 && mod.transmitLevel < mod.questLevel)
                         {
@@ -1190,8 +1292,10 @@ public class Augmenter : BloonsTD6Mod
                     }
                 }));
                 ModHelperImage image = boonButton.AddImage(new Info("image", 0, 0, 200), boon.TowerIcon);
+                ModHelperText cost = panel.AddText(new Info("cost", boon.xPos, boon.yPos - 150, 250, 120), $"${Mathf.Round(boon.cost)}", 50);
             }
 
+            ModHelperText disabled = panel.AddText(new Info("text", -600, -750, 250, 200), "Currently Disabled", 45);
             ModHelperText text = panel.AddText(new Info("text", 0, 975, 1200, 180), "Boons", 100);
             ModHelperText primaryText = panel.AddText(new Info("text", 0, 800, 1200, 180), "Primary", 100);
             ModHelperText militaryText = panel.AddText(new Info("text", 0, 350, 1200, 180), "Military", 100);
@@ -1266,10 +1370,10 @@ public class Augmenter : BloonsTD6Mod
                     {
                         masteryScrollPanel.AddScrollContent(CreateAugmentStack(augment, tower));
                     }
-                    /*else if (augment.AugmentRarity == AugmentTemplate.Rarity.Heroic)
+                    else if (augment.AugmentRarity == AugmentTemplate.Rarity.Heroic)
                     {
                         heroicScrollPanel.AddScrollContent(CreateAugmentStack(augment, tower));
-                    }*/
+                    }
                 }
             }
         }
@@ -1319,6 +1423,10 @@ public class Augmenter : BloonsTD6Mod
                 if (augment.AugmentRarity == AugmentTemplate.Rarity.Mastery)
                 {
                     sprite = VanillaSprites.MainBgPanelHematite;
+                }
+                if (augment.AugmentRarity == AugmentTemplate.Rarity.Heroic)
+                {
+                    sprite = VanillaSprites.PortraitContainerParagon;
                 }
                 InGame game = InGame.instance;
                 RectTransform rect = game.uiRect;
@@ -1376,8 +1484,8 @@ public class Augmenter : BloonsTD6Mod
             ModHelperText boonsText = boonsPanel.AddText(new Info("boonsText", 0, 350, 2500, 180), "Boons:", 100);
             ModHelperText boonText1 = boonsPanel.AddText(new Info("boonText1", 0, 175, 850, 180), "* Boons menu allows you to buy tower boons", 50, TextAlignmentOptions.Left);
             ModHelperText boonText2 = boonsPanel.AddText(new Info("boonText2", 0, 25, 850, 180), "* Boons guarantee that your next augment purchase is for that tower", 50, TextAlignmentOptions.Left);
-            ModHelperText boonText3 = boonsPanel.AddText(new Info("boonText3", 0, -100, 850, 180), "* Boons cost $2000 each", 50, TextAlignmentOptions.Left);
-            ModHelperText boonText4 = boonsPanel.AddText(new Info("boonText4", 0, -250, 850, 230), "* If a tower does not have an augment of the purchased rarity, the cost of the boon will be refunded", 50, TextAlignmentOptions.Left);
+            ModHelperText boonText3 = boonsPanel.AddText(new Info("boonText3", 0, -125, 850, 180), "* Boons increase in price as you buy them", 50, TextAlignmentOptions.Left);
+            ModHelperText boonText4 = boonsPanel.AddText(new Info("boonText4", 0, -300, 850, 230), "* If a tower does not have an augment of the purchased rarity, the cost of the boon will be refunded", 50, TextAlignmentOptions.Left);
 
             ModHelperScrollPanel levelsPanel = panel.AddScrollPanel(new Info("LevelsPanel", 475, -475, 1850, 850), RectTransform.Axis.Vertical, VanillaSprites.BrownInsertPanelDark);
             ModHelperText levelsText = levelsPanel.AddText(new Info("levelsText", 0, 325, 2500, 180), "Level Up:", 100);
@@ -1482,7 +1590,7 @@ public class Augmenter : BloonsTD6Mod
                     ModHelperButton newAdvancedAugBtn = panel.AddButton(new Info("newAugBtn", -450, 20, 400, 160), VanillaSprites.RedBtnLong, null);
                     ModHelperText newAdvancedAugBuy = newAdvancedAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Locked", 70);
                 }
-                if (mod.level == 3)
+                if (mod.level >= 3)
                 {
                     ModHelperButton newMasteryAugBtn = panel.AddButton(new Info("newAugBtn", 0, 20, 400, 160), VanillaSprites.GreenBtnLong, new System.Action(() => upgradeUi.NewMasteryAugment(tower)));
                     ModHelperText newMasteryAugBuy = newMasteryAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Buy", 70);
@@ -1492,8 +1600,18 @@ public class Augmenter : BloonsTD6Mod
                     ModHelperButton newMasteryAugBtn = panel.AddButton(new Info("newAugBtn", 0, 20, 400, 160), VanillaSprites.RedBtnLong, null);
                     ModHelperText newMasteryAugBuy = newMasteryAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Locked", 70);
                 }
+                if (mod.level >= 4)
+                {
+                    ModHelperButton newHeroicAugBtn = panel.AddButton(new Info("newAugBtn", -1200, 300, 500, 160), VanillaSprites.PurpleBtnLong, new System.Action(() => upgradeUi.NewHeroic(tower)));
+                    ModHelperText newHeroicAugBuy = newHeroicAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Heroics", 70);
+                }
+                /*else
+                {
+                    ModHelperButton newHeroicAugBtn = panel.AddButton(new Info("newAugBtn", -1200, 300, 500, 160), VanillaSprites.RedBtnLong, null);
+                    ModHelperText newHeroicAugBuy = newHeroicAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Locked", 70);
+                }*/
 
-                ModHelperButton questTracker = panel.AddButton(new Info("questTracker", 1200, 300, 500, 160), VanillaSprites.GreenBtnLong, new System.Action(() => { mod.questOpen = true; MenuUi.instance.CloseMenu(); MenuUi.CreateUpgradeMenu(rect, tower); }));
+                ModHelperButton questTracker = panel.AddButton(new Info("questTracker", 1200, 300, 500, 160), VanillaSprites.YellowBtnLong, new System.Action(() => { mod.questOpen = true; MenuUi.instance.CloseMenu(); MenuUi.CreateUpgradeMenu(rect, tower); }));
                 ModHelperText questTrackerText = questTracker.AddText(new Info("questTrackerText", 0, 0, 600, 160), "Transmission", 60);
 
                 if (mod.questOpen == true)
@@ -1557,10 +1675,10 @@ public class Augmenter : BloonsTD6Mod
             ModHelperText BoonsDesc = panel.AddText(new Info("newAugDesc", 1300, -100, 860, 180), "Opens the Boon Menu", 42);
             ModHelperText BoonCost = panel.AddText(new Info("newAugCost", 1300, 140, 1800, 180), "Buy Tower Boons", 70);
 
-            ModHelperButton tutorial = panel.AddButton(new Info("tutorial", -300, 300, 500, 160), VanillaSprites.GreenBtnLong, new System.Action(() => upgradeUi.TutorialPanel(tower)));
+            ModHelperButton tutorial = panel.AddButton(new Info("tutorial", -300, 300, 500, 160), VanillaSprites.BlueBtnLong, new System.Action(() => upgradeUi.TutorialPanel(tower)));
             ModHelperText tutorialMenu = tutorial.AddText(new Info("tutorialMenu", 0, 0, 600, 160), "Help", 70);
 
-            ModHelperButton stackTracker = panel.AddButton(new Info("stackTracker", 300, 300, 500, 160), VanillaSprites.GreenBtnLong, new System.Action(() => upgradeUi.AugmentStack(tower)));
+            ModHelperButton stackTracker = panel.AddButton(new Info("stackTracker", 300, 300, 500, 160), VanillaSprites.BlueBtnLong, new System.Action(() => upgradeUi.AugmentStack(tower)));
             ModHelperText StackTrackerMenu = stackTracker.AddText(new Info("stackTrackerMenu", 0, 0, 600, 160), "Stack Tracker", 60);
         }
 

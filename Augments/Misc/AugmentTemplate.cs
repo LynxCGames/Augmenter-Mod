@@ -33,7 +33,7 @@ namespace Templates
             Intermediate,
             Advanced,
             Mastery,
-            //Heroic
+            Heroic
         }
         public int StackIndex = 0;
     }
@@ -168,6 +168,7 @@ namespace Templates
         public abstract Type TowerType { get; }
         public abstract int xPos { get; }
         public abstract int yPos { get; }
+        public float cost = 2000;
         public enum Type
         {
             Primary,
