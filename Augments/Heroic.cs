@@ -202,7 +202,7 @@ namespace AugmentsMod.Augments
 
     public class Heroic
     {
-        public static List<string> HeroicAug = new List<string>();
-        public static List<string> HeroicImg = new List<string>();
+        public static List<string> HeroicAug = [];
+        public static List<string> HeroicImg = [];
     }
 }

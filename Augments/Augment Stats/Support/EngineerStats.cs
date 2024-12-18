@@ -200,8 +200,6 @@ namespace AugmentsMod.Augments.Augment_Stats
                                 i++;
                             }
 
-                            towerModel.RemoveBehaviors<NecromancerZoneModel>();
-                            towerModel.RemoveBehaviors<AttackModel>();
                             towerModel.AddBehavior(summon);
                         }
                     }

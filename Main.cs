@@ -22,7 +22,15 @@ using UnityEngine;
 using HarmonyLib;
 using UnityEngine.UIElements;
 using Il2CppAssets.Scripts.Unity.Gamepad;
-using Il2CppAssets.Scripts.Data.Quests.QuestDialogue;
+//using Il2CppAssets.Scripts.Data.Quests.QuestDialogue;
+using Il2Cpp;
+using Il2CppNinjaKiwi.Common.ResourceUtils;
+using Il2CppAssets.Scripts.Simulation.SimulationBehaviors;
+using Il2CppAssets.Scripts.Models.Profile;
+using Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu;
+using Newtonsoft.Json;
+using Il2CppAssets.Scripts.Simulation.Track;
+using Augmenter;
 
 [assembly: MelonInfo(typeof(AugmentsMod.Augmenter), ModHelperData.Name, ModHelperData.Version, ModHelperData.RepoOwner)]
 [assembly: MelonGame("Ninja Kiwi", "BloonsTD6")]
@@ -163,13 +171,51 @@ public class Augmenter : BloonsTD6Mod
         questXp = 5;
         questXPMax = 5;
     }
+    public override void OnTowerSaved(Tower tower, TowerSaveDataModel saveData)
+    {
+        if (tower.towerModel.GetModTower()?.GetType() == typeof(AugmenterTower))
+        {
+            saveData.metaData["Augments"] = string.Join('^', ModContent.GetContent<AugmentTemplate>().OrderBy(a => a.Id).Select(a => a.StackIndex));
+            saveData.metaData["Boons"] = string.Join('^', ModContent.GetContent<BoonTemplate>().OrderBy(a => a.Id).Select(a => a.cost));
+            saveData.metaData["Level"] = $"{mod.level}";
+            saveData.metaData["Xp"] = $"{mod.levelXp}";
+            saveData.metaData["MaxXp"] = $"{mod.XPMax}";
+        }
+    }
+    public override void OnTowerLoaded(Tower tower, TowerSaveDataModel saveData)
+    {
+        if (tower.towerModel.GetModTower()?.GetType() == typeof(AugmenterTower))
+        {
+            string savedDataAug = saveData.metaData["Augments"];
+            var augParts = savedDataAug.Split('^');
+            var augments = ModContent.GetContent<AugmentTemplate>().OrderBy(a => a.Id).ToArray();
+
+            for (var i = 0; i < augments.Length; i++)
+            {
+                ((AugmentTemplate)ModContent.GetInstance(augments[i].GetType())).StackIndex = int.Parse(augParts[i]);
+            }
+
+            string savedDataBoon = saveData.metaData["Boons"];
+            var boonParts = savedDataBoon.Split('^');
+            var boons = ModContent.GetContent<BoonTemplate>().OrderBy(a => a.Id).ToArray();
+
+            for (var i = 0; i < boons.Length; i++)
+            {
+                ((BoonTemplate)ModContent.GetInstance(boons[i].GetType())).cost = int.Parse(boonParts[i]);
+            }
+
+            mod.level = int.Parse(saveData.metaData["Level"]);
+            mod.levelXp = int.Parse(saveData.metaData["Xp"]);
+            mod.XPMax = int.Parse(saveData.metaData["MaxXp"]);
+        }
+    }
     public override void OnGameModelLoaded(GameModel model)
     {
         Reset();
     }
     public override void OnNewGameModel(GameModel result)
     {
-        foreach (var tower in result.towerSet.ToList())
+        foreach (var tower in result.towerSet)
         {
             if (tower.name.Contains("AugmenterMonkey"))
             {
@@ -417,8 +463,6 @@ public class Augmenter : BloonsTD6Mod
     {
         if (tower.towerModel.name.Contains("AugmenterMonkey"))
         {
-            InGame game = InGame.instance;
-            RectTransform rect = game.uiRect;
             isSelected = false;
             if (MenuUi.instance)
             {
@@ -463,7 +507,7 @@ public class Augmenter : BloonsTD6Mod
 
             MenuUi upgradeUi = panel.AddComponent<MenuUi>();
             ModHelperText selectAug = panel.AddText(new Info("selectAug", 0, 800, 2500, 180), "Select New Augment", 100);
-            Il2CppSystem.Random rnd = new Il2CppSystem.Random();
+            Il2CppSystem.Random rnd = new();
             for (int i = 0; i < mod.newAugmentSlot; i++)
             {
                 var AugRarityNum = rnd.Next(1, 100);
@@ -539,8 +583,8 @@ public class Augmenter : BloonsTD6Mod
                 var sprite = VanillaSprites.MainBgPanelJukebox;
                 var augment = "";
                 var img = "";
-                List<string> augmentName = new List<string>();
-                List<string> augmentImage = new List<string>();
+                List<string> augmentName = new();
+                List<string> augmentImage = new();
 
                 if (mod.activeBoon == true)
                 {
@@ -682,7 +726,7 @@ public class Augmenter : BloonsTD6Mod
 
             MenuUi upgradeUi = panel.AddComponent<MenuUi>();
             ModHelperText selectAug = panel.AddText(new Info("selectAug", 0, 800, 2500, 180), "Select New Augment", 100);
-            Il2CppSystem.Random rnd = new Il2CppSystem.Random();
+            Il2CppSystem.Random rnd = new();
             for (int i = 0; i < mod.newAugmentSlot; i++)
             {
                 var AugRarityNum = rnd.Next(1, 100);
@@ -691,8 +735,8 @@ public class Augmenter : BloonsTD6Mod
                 var sprite = VanillaSprites.MainBGPanelBronze;
                 var augment = "";
                 var img = "";
-                List<string> augmentName = new List<string>();
-                List<string> augmentImage = new List<string>();
+                List<string> augmentName = new();
+                List<string> augmentImage = new();
 
                 if (mod.activeBoon == true)
                 {
@@ -808,7 +852,7 @@ public class Augmenter : BloonsTD6Mod
 
             MenuUi upgradeUi = panel.AddComponent<MenuUi>();
             ModHelperText selectAug = panel.AddText(new Info("selectAug", 0, 800, 2500, 180), "Select New Augment", 100);
-            Il2CppSystem.Random rnd = new Il2CppSystem.Random();
+            Il2CppSystem.Random rnd = new();
             for (int i = 0; i < mod.newAugmentSlot; i++)
             {
                 var AugRarityNum = rnd.Next(1, 100);
@@ -817,8 +861,8 @@ public class Augmenter : BloonsTD6Mod
                 var sprite = VanillaSprites.MainBGPanelSilver;
                 var augment = "";
                 var img = "";
-                List<string> augmentName = new List<string>();
-                List<string> augmentImage = new List<string>();
+                List<string> augmentName = new();
+                List<string> augmentImage = new();
 
                 if (mod.activeBoon == true)
                 {
@@ -956,7 +1000,7 @@ public class Augmenter : BloonsTD6Mod
 
             MenuUi upgradeUi = panel.AddComponent<MenuUi>();
             ModHelperText selectAug = panel.AddText(new Info("selectAug", 0, 800, 2500, 180), "Select New Augment", 100);
-            Il2CppSystem.Random rnd = new Il2CppSystem.Random();
+            Il2CppSystem.Random rnd = new();
             for (int i = 0; i < mod.newAugmentSlot; i++)
             {
                 var AugRarityNum = rnd.Next(1, 100);
@@ -965,8 +1009,8 @@ public class Augmenter : BloonsTD6Mod
                 var sprite = VanillaSprites.MainBgPanelHematite;
                 var augment = "";
                 var img = "";
-                List<string> augmentName = new List<string>();
-                List<string> augmentImage = new List<string>();
+                List<string> augmentName = new();
+                List<string> augmentImage = new();
 
                 if (mod.activeBoon == true)
                 {
@@ -1210,10 +1254,10 @@ public class Augmenter : BloonsTD6Mod
                 mod.levelXp = 0;
                 mod.XPMax = 250;
             }
-            /*if (mod.level == 3 && mod.levelXp >= mod.XPMax)
+            if (mod.level == 3 && mod.levelXp >= mod.XPMax)
             {
                 mod.level += 1;
-            }*/
+            }
 
             if (mod.questLevel == 1 && mod.questXp >= mod.questXPMax)
             {
@@ -1314,7 +1358,7 @@ public class Augmenter : BloonsTD6Mod
 
         // #### Stack Tracker Panel ####
 
-        public void AugmentStack(Tower tower)
+        public static void AugmentStack(Tower tower)
         {
             InGame game = InGame.instance;
             RectTransform rect = game.uiRect;
@@ -1403,7 +1447,7 @@ public class Augmenter : BloonsTD6Mod
             return panel;
         }
 
-
+        
         // #### Info Panel ####
 
         public void InfoPanel(AugmentTemplate augment, Tower tower)
@@ -1441,8 +1485,6 @@ public class Augmenter : BloonsTD6Mod
         }
         public void CloseMessage()
         {
-            InGame game = InGame.instance;
-            RectTransform rect = game.uiRect;
             Destroy(gameObject);
             mod.infoOpen = false;
             mod.transmitOpen = false;
@@ -1599,13 +1641,13 @@ public class Augmenter : BloonsTD6Mod
                 {
                     ModHelperButton newMasteryAugBtn = panel.AddButton(new Info("newAugBtn", 0, 20, 400, 160), VanillaSprites.RedBtnLong, null);
                     ModHelperText newMasteryAugBuy = newMasteryAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Locked", 70);
-                }
+                }/*
                 if (mod.level >= 4)
                 {
                     ModHelperButton newHeroicAugBtn = panel.AddButton(new Info("newAugBtn", -1200, 300, 500, 160), VanillaSprites.PurpleBtnLong, new System.Action(() => upgradeUi.NewHeroic(tower)));
                     ModHelperText newHeroicAugBuy = newHeroicAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Heroics", 70);
                 }
-                /*else
+                else
                 {
                     ModHelperButton newHeroicAugBtn = panel.AddButton(new Info("newAugBtn", -1200, 300, 500, 160), VanillaSprites.RedBtnLong, null);
                     ModHelperText newHeroicAugBuy = newHeroicAugBtn.AddText(new Info("newAugBuy", 0, 0, 400, 160), "Locked", 70);
@@ -1678,7 +1720,7 @@ public class Augmenter : BloonsTD6Mod
             ModHelperButton tutorial = panel.AddButton(new Info("tutorial", -300, 300, 500, 160), VanillaSprites.BlueBtnLong, new System.Action(() => upgradeUi.TutorialPanel(tower)));
             ModHelperText tutorialMenu = tutorial.AddText(new Info("tutorialMenu", 0, 0, 600, 160), "Help", 70);
 
-            ModHelperButton stackTracker = panel.AddButton(new Info("stackTracker", 300, 300, 500, 160), VanillaSprites.BlueBtnLong, new System.Action(() => upgradeUi.AugmentStack(tower)));
+            ModHelperButton stackTracker = panel.AddButton(new Info("stackTracker", 300, 300, 500, 160), VanillaSprites.BlueBtnLong, new System.Action(() => AugmentStack(tower)));
             ModHelperText StackTrackerMenu = stackTracker.AddText(new Info("stackTrackerMenu", 0, 0, 600, 160), "Stack Tracker", 60);
         }
 
@@ -1845,7 +1887,7 @@ public class Augmenter : BloonsTD6Mod
 
     // #### Harmony Patches ####
 
-    public static class patch
+    public static class Patch
     {
         [HarmonyPatch(typeof(Il2CppAssets.Scripts.Simulation.Input.InputManager), nameof(Il2CppAssets.Scripts.Simulation.Input.InputManager.GetRangeMeshes))]
         internal static class InputManager_GetRangeMeshes
@@ -1872,4 +1914,69 @@ public class Augmenter : BloonsTD6Mod
             }
         }
     }
+
+    /*[HarmonyPatch(typeof(Map), nameof(Map.GetSaveData))]
+    [HarmonyPostfix]
+    static void OnMapSaved(Tower tower, MapSaveDataModel mapData)
+    {
+       
+
+
+        if (tower.towerModel.GetModTower()?.GetType() == typeof(Augmenter))
+        {
+
+        }
+
+
+        var json = JsonConvert.SerializeObject(UpgradeMenu.PurchasedUpgrades);
+        mapData.metaData["CursorUpgrade"] = json;
+
+        mapData.metaData["CursorPops"] = CursorPops.ToString(CultureInfo.InvariantCulture);
+
+        foreach (var upgrade in CurrentUpgrades.OrderBy(x => x.Tier))
+        {
+            upgrade.OnMapSaved(mapData);
+        }
+    }
+
+    /*[HarmonyPatch(typeof(Map), nameof(Map.SetSaveData))]
+    [HarmonyPostfix]
+    static void OnMapLoaded(MapSaveDataModel mapData)
+    {
+        CurrentUpgrades.Clear();
+        if (mapData.metaData.TryGetValue("CursorUpgrade", out var data))
+        {
+            UpgradeMenu.PurchasedUpgrades = JsonConvert.DeserializeObject<Dictionary<Path, int>>(data) ?? new Dictionary<Path, int>();
+
+            foreach (var (path, tier) in UpgradeMenu.PurchasedUpgrades)
+            {
+                for (var i = 0; i <= tier; i++)
+                {
+                    if (!CursorUpgrade.Cache[path].TryGetValue(i, out var upgrade))
+                        continue;
+                    CurrentUpgrades.Add(upgrade);
+                }
+            }
+        }
+        else
+        {
+            UpgradeMenu.PurchasedUpgrades = Paths.ToDictionary(path => path, _ => UpgradeMenu.UnPurchased);
+        }
+
+        if (mapData.metaData.TryGetValue("CursorPops", out var cursorPops))
+        {
+            CursorPops = float.Parse(cursorPops, CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            CursorPops = 0;
+        }
+
+        foreach (var upgrade in CurrentUpgrades.OrderBy(x => x.Tier))
+        {
+            upgrade.OnMapLoaded(mapData);
+        }
+
+        CursorUpgrade.UpdateTower();
+    }*/
 }

@@ -31,6 +31,30 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "DartSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
+                    if (augment.Name == "DartRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
                     if (augment.Name == "DartPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
@@ -52,6 +76,16 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "BoomerangSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
                     if (augment.Name == "BoomerangPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
@@ -95,7 +129,21 @@ namespace AugmentsMod.Augments.Augment_Stats
                             towerModel.GetAttackModel().weapons[0].rate /= 1.07f;
                             i++;
                         }
-                    }                                        
+                    }
+
+                    if (augment.Name == "BombRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -121,6 +169,25 @@ namespace AugmentsMod.Augments.Augment_Stats
                             towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
                             i++;
                         }
+                    }
+
+                    if (augment.Name == "TackRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
+                    if (augment.Name == "TackPierce")
+                    {
+                        towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
                     }
                 }
             }
@@ -148,6 +215,20 @@ namespace AugmentsMod.Augments.Augment_Stats
                             i++;
                         }
                     }
+
+                    /*if (augment.Name == "IceRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }*/
                 }
             }
 
@@ -174,6 +255,20 @@ namespace AugmentsMod.Augments.Augment_Stats
                             i++;
                         }
                     }
+
+                    if (augment.Name == "GlueRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -191,6 +286,16 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "SniperSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.1f;
+                            i++;
+                        }
+                    }
+
                     if (augment.Name == "SniperDamage")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.GetDamageModel().damage += augment.StackIndex;
@@ -212,6 +317,30 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "SubSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
+                    if (augment.Name == "SubRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
                     if (augment.Name == "SubPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
@@ -233,6 +362,19 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "BuccaneerSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                            {
+                                weaponModel.rate /= 1.05f;
+                            }
+                            i++;
+                        }
+                    }
+
                     if (augment.Name == "BuccaneerRange")
                     {
                         towerModel.range *= (1 + 0.05f * augment.StackIndex);
@@ -244,6 +386,14 @@ namespace AugmentsMod.Augments.Augment_Stats
                             {
                                 weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
                             }
+                        }
+                    }
+
+                    if (augment.Name == "BuccaneerPierce")
+                    {
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            weaponModel.projectile.pierce += 1;
                         }
                     }
                 }
@@ -272,6 +422,11 @@ namespace AugmentsMod.Augments.Augment_Stats
                             i++;
                         }
                     }
+
+                    if (augment.Name == "AcePierce")
+                    {
+                        towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
+                    }
                 }
             }
 
@@ -289,6 +444,22 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "HeliSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+
+                            if (towerModel.appliedUpgrades.Contains(UpgradeType.QuadDarts))
+                            {
+                                towerModel.GetAttackModel().weapons[1].rate /= 1.06f;
+                            }
+
+                            i++;
+                        }
+                    }
+
                     if (augment.Name == "HeliPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
@@ -315,6 +486,16 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "MortarSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.06f;
+                            i++;
+                        }
+                    }
+
                     if (augment.Name == "MortarRadius")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CreateProjectileOnExhaustFractionModel>().projectile.radius *= (1 + 0.08f * augment.StackIndex);
@@ -338,6 +519,16 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "DartlingSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
                     if (augment.Name == "DartlingPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
@@ -359,6 +550,30 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "WizardSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
+                    if (augment.Name == "WizardRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
                     if (augment.Name == "WizardPierce")
                     {
                         foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
@@ -396,6 +611,11 @@ namespace AugmentsMod.Augments.Augment_Stats
                             }
                         }
                     }
+
+                    if (augment.Name == "SuperPierce")
+                    {
+                        towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
+                    }
                 }
             }
 
@@ -413,6 +633,30 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "NinjaSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
+                    if (augment.Name == "NinjaRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
                     if (augment.Name == "NinjaPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
@@ -443,6 +687,20 @@ namespace AugmentsMod.Augments.Augment_Stats
                             i++;
                         }
                     }
+
+                    /*if (augment.Name == "AlchemistRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }*/
                 }
             }
 
@@ -468,6 +726,25 @@ namespace AugmentsMod.Augments.Augment_Stats
                             towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
                             i++;
                         }
+                    }
+
+                    if (augment.Name == "DruidRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
+                    if (augment.Name == "DruidPierce")
+                    {
+                        towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
                     }
                 }
             }
@@ -498,6 +775,11 @@ namespace AugmentsMod.Augments.Augment_Stats
                             i++;
                         }
                     }
+
+                    if (augment.Name == "MermonkeyPierce")
+                    {
+                        towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
+                    }
                 }
             }
 
@@ -523,6 +805,25 @@ namespace AugmentsMod.Augments.Augment_Stats
                             towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
                             i++;
                         }
+                    }
+
+                    /*if (augment.Name == "SpactoryRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }*/
+
+                    if (augment.Name == "SpactoryPierce")
+                    {
+                        towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;
                     }
                 }
             }
@@ -585,6 +886,30 @@ namespace AugmentsMod.Augments.Augment_Stats
             {
                 foreach (var augment in ModContent.GetContent<AugmentTemplate>().ToList())
                 {
+                    if (augment.Name == "EngineerSpeed")
+                    {
+                        int i = 0;
+                        while (i < augment.StackIndex - 1)
+                        {
+                            towerModel.GetAttackModel().weapons[0].rate /= 1.05f;
+                            i++;
+                        }
+                    }
+
+                    if (augment.Name == "EngineerRange")
+                    {
+                        towerModel.range *= (1 + 0.05f * augment.StackIndex);
+                        towerModel.GetAttackModel().range *= (1 + 0.05f * augment.StackIndex);
+
+                        foreach (var weaponModel in towerModel.GetDescendants<WeaponModel>().ToArray())
+                        {
+                            if (weaponModel.projectile.GetBehaviors<TravelStraitModel>() != null)
+                            {
+                                weaponModel.projectile.GetBehavior<TravelStraitModel>().Lifespan *= (1 + 0.05f * augment.StackIndex);
+                            }
+                        }
+                    }
+
                     if (augment.Name == "EngineerPierce")
                     {
                         towerModel.GetAttackModel().weapons[0].projectile.pierce += augment.StackIndex;

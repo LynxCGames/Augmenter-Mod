@@ -159,7 +159,7 @@ namespace AugmentsMod.Augments.Augment_Stats
                         {
                             var missiles = Game.instance.model.GetTowerFromId("BombShooter-040").GetAttackModel().weapons[0].projectile.Duplicate();
                             missiles.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage = 5;
-                            missiles.GetBehavior<CreateProjectileOnContactModel>().projectile.AddBehavior(new DamageModifierForTagModel("aaa", "Moabs", 1, (25 * augment.StackIndex), false, false) { name = "MoabModifier_" });
+                            missiles.GetBehavior<CreateProjectileOnContactModel>().projectile.AddBehavior(new DamageModifierForTagModel("aaa", "Moabs", 1, (5 + 10 * augment.StackIndex), false, false) { name = "MoabModifier_" });
                             missiles.GetBehavior<TravelStraitModel>().lifespan = Game.instance.model.GetTowerFromId("DartlingGunner-005").GetAttackModel().weapons[0].projectile.GetBehavior<TravelStraitModel>().lifespan * 2;
                             missiles.scale /= 2;
 

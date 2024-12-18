@@ -30,6 +30,7 @@ namespace Augmenter
         public override void ModifyBaseTowerModel(TowerModel towerModel)
         {
             towerModel.range = Game.instance.model.GetTowerFromId("SniperMonkey").range;
+            towerModel.dontDisplayUpgrades = true;
 
             var attackModel = towerModel.GetAttackModel();
             towerModel.RemoveBehavior(attackModel);

@@ -88,8 +88,8 @@ namespace AugmentsMod.Augments.Augment_Stats
                     {
                         if (augment.StackIndex >= 1)
                         {
-                            towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1.15f + 0.15f * augment.StackIndex);
-                            towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1.15f + 0.15f * augment.StackIndex);
+                            towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1.1f + 0.1f * augment.StackIndex);
+                            towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1.1f + 0.1f * augment.StackIndex);
                         }
                     }
                 }

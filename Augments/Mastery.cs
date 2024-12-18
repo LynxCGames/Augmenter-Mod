@@ -48,6 +48,9 @@ using Il2CppAssets.Scripts.Data.TrophyStore;
 using Il2CppAssets.Scripts.Data;
 using Il2CppAssets.Scripts.Data.Cosmetics.Pets;
 using BTD_Mod_Helper.Api.Display;
+using Il2CppAssets.Scripts.Models.Powers;
+using Il2CppAssets.Scripts.Simulation.Behaviors;
+using UnityEngine.UIElements;
 
 namespace AugmentsMod.Augments
 {
@@ -578,12 +581,12 @@ namespace AugmentsMod.Augments
         public override string AugmentName => "No Bloons Land";
         public override string Icon => VanillaSprites.BloonExclusionZoneUpgradeIcon;
         public override string TowerType => "Dartling Gunner Augment";
-        public override string AugmentDescription => "Bloon Exclusion Zone fires out MOAB assassin missiles that deal 5 damage and an extra 25 (+25 per stack) damage to MOABs.";
+        public override string AugmentDescription => "Bloon Exclusion Zone fires out MOAB assassin missiles that deal 5 damage and an extra 15 (+10 per stack) damage to MOABs.";
         public override void EditTower()
         {
             var missiles = Game.instance.model.GetTowerFromId("BombShooter-040").GetAttackModel().weapons[0].projectile.Duplicate();
             missiles.GetBehavior<CreateProjectileOnContactModel>().projectile.GetDamageModel().damage = 5;
-            missiles.GetBehavior<CreateProjectileOnContactModel>().projectile.AddBehavior(new DamageModifierForTagModel("aaa", "Moabs", 1, 25, false, false) { name = "MoabModifier_" });
+            missiles.GetBehavior<CreateProjectileOnContactModel>().projectile.AddBehavior(new DamageModifierForTagModel("aaa", "Moabs", 1, 15, false, false) { name = "MoabModifier_" });
             missiles.GetBehavior<TravelStraitModel>().lifespan = Game.instance.model.GetTowerFromId("DartlingGunner-005").GetAttackModel().weapons[0].projectile.GetBehavior<TravelStraitModel>().lifespan * 2;
             missiles.scale /= 2;
 
@@ -619,7 +622,7 @@ namespace AugmentsMod.Augments
                                 {
                                     if (attack.name.Contains("NoBloonsLand_"))
                                     {
-                                        attack.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetBehavior<DamageModifierForTagModel>().damageAddative += 25;
+                                        attack.weapons[0].projectile.GetBehavior<CreateProjectileOnContactModel>().projectile.GetBehavior<DamageModifierForTagModel>().damageAddative += 10;
                                     }
                                 }
                             }
@@ -754,8 +757,6 @@ namespace AugmentsMod.Augments
                         {
                             if (augment.StackIndex == 1)
                             {
-                                towerModel.RemoveBehaviors<NecromancerZoneModel>();
-                                towerModel.RemoveBehaviors<AttackModel>();
                                 towerModel.AddBehavior(summon);
                             }
                             if (augment.StackIndex > 1)
@@ -785,15 +786,27 @@ namespace AugmentsMod.Augments
         [HarmonyPrefix]
         private static bool Postfix(NecroData __instance, ref int __result)
         {
-            var tower = __instance.tower;
-            __result = 9999;
+            var towerModel = __instance.tower.towerModel;
+            if (towerModel != null && towerModel.appliedUpgrades.Contains(UpgradeType.XXXLTrap))
+            {
+                foreach (var augment in ModContent.GetContent<AugmentTemplate>())
+                {
+                    if (augment.Name == "Destructobots")
+                    {
+                        if (augment.StackIndex >= 1)
+                        {
+                            __result = 9999;
+                        }
+                    }
+                }
+            }
             return false;
         }
     }
 
     public class Mastery
     {
-        public static List<string> MasteryAug = new List<string>();
-        public static List<string> MasteryImg = new List<string>();
+        public static List<string> MasteryAug = [];
+        public static List<string> MasteryImg = [];
     }
 }

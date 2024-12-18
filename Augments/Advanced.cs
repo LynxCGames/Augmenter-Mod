@@ -1346,7 +1346,7 @@ namespace AugmentsMod.Augments
         public override string AugmentName => "Banana Republic";
         public override string Icon => VanillaSprites.BananaPlantationUpgradeIcon;
         public override string TowerType => "Banana Farm Augment";
-        public override string AugmentDescription => "Banana Plantation bananas are worth 30% (+15% per stack) more.";
+        public override string AugmentDescription => "Banana Plantation bananas are worth 20% (+10% per stack) more.";
         public override void EditTower()
         {
             foreach (var towers in InGame.instance.GetTowers().ToArray())
@@ -1361,24 +1361,24 @@ namespace AugmentsMod.Augments
                         {
                             if (augment.StackIndex == 1)
                             {
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1 + 0.3f * augment.StackIndex);
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1 + 0.3f * augment.StackIndex);
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1 + 0.2f * augment.StackIndex);
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1 + 0.2f * augment.StackIndex);
                             }
                             if (augment.StackIndex == 2)
                             {
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum /= (1 + 0.3f * (augment.StackIndex - 1));
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum /= (1 + 0.3f * (augment.StackIndex - 1));
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum /= (1 + 0.2f * (augment.StackIndex - 1));
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum /= (1 + 0.2f * (augment.StackIndex - 1));
 
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1.15f + 0.15f * augment.StackIndex);
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1.15f + 0.15f * augment.StackIndex);
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1.1f + 0.1f * augment.StackIndex);
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1.1f + 0.1f * augment.StackIndex);
                             }
                             if (augment.StackIndex > 2)
                             {
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum /= (1.15f + 0.15f * (augment.StackIndex - 1));
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum /= (1.15f + 0.15f * (augment.StackIndex - 1));
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum /= (1.1f + 0.1f * (augment.StackIndex - 1));
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum /= (1.1f + 0.1f * (augment.StackIndex - 1));
 
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1.15f + 0.15f * augment.StackIndex);
-                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1.15f + 0.15f * augment.StackIndex);
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().minimum *= (1.1f + 0.1f * augment.StackIndex);
+                                towerModel.GetAttackModel().weapons[0].projectile.GetBehavior<CashModel>().maximum *= (1.1f + 0.1f * augment.StackIndex);
                             }
                         }
                     }
@@ -1552,7 +1552,7 @@ namespace AugmentsMod.Augments
 
     public class Advanced
     {
-        public static List<string> AdvancedAug = new List<string>();
-        public static List<string> AdvancedImg = new List<string>();
+        public static List<string> AdvancedAug = [];
+        public static List<string> AdvancedImg = [];
     }
 }

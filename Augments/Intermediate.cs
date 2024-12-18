@@ -665,7 +665,7 @@ public class GorillaGlue : AugmentTemplate
         public override string AugmentName => "Double Tap";
         public override string Icon => VanillaSprites.EvenFasterFiringUpgradeIcon;
         public override string TowerType => "Sniper Monkey Augment";
-        public override string AugmentDescription => "Even Faster Firing shoots 2 bullets at a time. The second bullet deals 0 (+1 per stack) additional damage.";
+        public override string AugmentDescription => "Even Faster Firing shoots a second regular bullet that deals 0 (+1 per stack) additional damage.";
         public override void EditTower()
         {
             var snipe = Game.instance.model.GetTowerFromId("SniperMonkey").GetAttackModel().Duplicate();
@@ -1698,7 +1698,7 @@ public class GorillaGlue : AugmentTemplate
 
     public class Intermediate
     {
-        public static List<string> IntermediateAug = new List<string>();
-        public static List<string> IntermediateImg = new List<string>();
+        public static List<string> IntermediateAug = [];
+        public static List<string> IntermediateImg = [];
     }
 }
